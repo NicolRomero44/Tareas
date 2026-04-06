@@ -1,0 +1,721 @@
+--- 
+title: "ggplot2"
+author: Nicol Romero
+date: "2026-03-29"
+output: html_document
+format: 
+  html:
+    theme: 
+      light: flatly
+      dark: darkly
+    toc: true
+    toc_float: true
+    number-sections: true
+    code-fold: show
+    code-tools: true
+    code-copy: hover
+    code-overflow: wrap
+    embed-resources: true
+reference-location: margin
+lang: es
+---
+  
+# Introducción
+
+La visualización de datos es una herramienta fundamental en el análisis estadístico y en la toma de decisiones basada en información. A través de representaciones gráficas es posible identificar patrones, tendencias, relaciones y comportamientos dentro de un conjunto de datos.
+
+En este documento se utilizan diferentes conjuntos de datos simulados para aplicar técnicas de visualización mediante la librería **ggplot2** del lenguaje de programación R. El objetivo es explorar distintas formas de representar información mediante gráficos de dispersión, histogramas, boxplots, gráficos de líneas y visualizaciones facetadas.
+
+Cada gráfico presentado incluye una interpretación que explica el significado de los patrones observados, permitiendo que el documento sea comprensible para cualquier lector, incluso sin experiencia previa en programación.
+
+El objetivo es explorar tres conjuntos de datos distintos:
+
+- Datos de estudiantes
+- Datos de ventas empresariales
+- Datos de clientes (Customer Churn)
+.
+
+---
+
+# 1. Análisis del rendimiento de estudiantes
+
+## Creación del dataset
+
+```{r}
+library(ggplot2)
+
+students <- data.frame(
+  id = 1:20,
+  hours_study = c(2,3,4,5,6,3,4,7,8,5,6,7,3,2,9,10,4,6,8,5),
+  score = c(50,55,65,70,75,60,66,80,85,72,74,78,58,52,90,95,67,76,88,73),
+  gender = rep(c("Male","Female"),10),
+  major = rep(c("Engineering","Business","Arts","Science"),5)
+)
+```
+
+---
+
+## 1.1 Diagrama de dispersión: horas de estudio vs puntaje
+
+**Enunciado:**  
+Crear un gráfico de dispersión que muestre la relación entre las horas de estudio y el puntaje obtenido.
+
+```{r}
+ggplot(students, aes(hours_study, score)) +
+  geom_point(color="blue", size=3) +
+  theme_minimal() +
+  labs(
+    title="Relación entre horas de estudio y puntaje",
+    x="Horas de estudio",
+    y="Puntaje obtenido"
+  ) +
+  theme(
+    plot.title = element_text(hjust=0.5),
+    panel.grid = element_line(color="gray80")
+  )
+```
+
+**Interpretación**
+
+El gráfico muestra una relación positiva entre las horas de estudio y la calificación obtenida. A medida que los estudiantes dedican más tiempo al estudio, sus resultados tienden a mejorar. La línea de regresión confirma esta tendencia creciente. Además, se observa que el patrón es relativamente similar entre estudiantes de diferentes géneros.
+
+---
+
+## 1.2 Etiquetas y temas
+
+```{r}
+ggplot(students, aes(hours_study, score, color=gender)) +
+  geom_point(size=3) +
+  geom_smooth(method="lm", se=FALSE) +
+  theme_minimal() +
+  labs(
+    title="Horas de estudio y rendimiento por género",
+    x="Horas de estudio",
+    y="Puntaje"
+  ) +
+  theme(plot.title = element_text(hjust=0.5))
+```
+
+**Interpretación**
+
+La línea de regresión muestra la tendencia entre estudio y rendimiento.  
+El uso de colores permite comparar el comportamiento entre los diferentes géneros.
+
+---
+
+## 1.3 Capas geométricas
+
+```{r}
+ggplot(students, aes(gender, score, fill=gender)) +
+  geom_boxplot() +
+  theme_minimal() +
+  labs(
+    title="Distribución de puntajes por género",
+    x="Género",
+    y="Puntaje"
+  ) +
+  theme(plot.title = element_text(hjust=0.5))
+```
+
+**Interpretación**
+
+El diagrama de cajas permite comparar la distribución de las calificaciones entre los géneros. Las medianas son similares, lo que sugiere que el rendimiento académico entre los grupos es relativamente comparable.
+
+---
+
+## 1.4.1 Visualización por facetas
+
+*facet_wrap()*
+
+```{r}
+ggplot(students, aes(score)) +
+  geom_histogram(bins=8, fill="skyblue", color="black") +
+  facet_wrap(~major) +
+  labs(
+    title="Relación entre horas de estudio y calificación según la carrera",
+    x="Puntaje",
+    y="Frecuencia"
+  ) +
+  theme(plot.title = element_text(hjust=0.5))
+```
+
+**Interpretación de facet_wrap()**
+
+El uso de *facet_wrap()* permite dividir el gráfico en varios paneles según la variable major, que representa la carrera de los estudiantes. Cada panel muestra la relación entre las horas de estudio y la calificación dentro de una carrera específica. Esto facilita comparar si el comportamiento académico es similar o diferente entre las distintas áreas de estudio.
+
+
+---
+
+## 1.4.2 Visualización por facetas
+
+*facet_grid()*
+
+```{r}
+ggplot(students, aes(score)) +
+  geom_histogram(bins=8, fill="skyblue", color="black") +
+  facet_grid(gender ~ major) +
+  labs(
+    title="Relación entre horas de estudio y calificación según la carrera",
+    x="Puntaje",
+    y="Frecuencia"
+  ) +
+  theme(plot.title = element_text(hjust=0.5))
+```
+
+**Interpretación de facet_grid()**
+
+El uso de *facet_grid()* permite organizar los gráficos en una estructura de filas y columnas. En este caso, las filas representan el género de los estudiantes y las columnas representan la carrera. Esta visualización permite comparar simultáneamente cómo se comporta la relación entre horas de estudio y calificación considerando dos variables categóricas al mismo tiempo.
+
+---
+
+## 1.5 Personalización estética
+
+```{r}
+ggplot(students, aes(hours_study, score,
+                     color = gender,
+                     shape = major)) +
+  geom_point(aes(size = score), alpha = 0.8) +
+  geom_smooth(method = "lm", se = FALSE) +
+  theme_minimal() +
+  labs(
+    title = "Análisis multivariable del rendimiento académico",
+    x = "Horas de estudio",
+    y = "Calificación",
+    color = "Género",
+    shape = "Carrera",
+    size = "Calificación"
+  )
+```
+
+**Interpretación**
+
+En este gráfico se representan varias variables simultáneamente utilizando diferentes atributos visuales. El color indica el género, el tamaño del punto representa la calificación y la forma identifica la carrera. Esto permite analizar múltiples dimensiones de los datos en una sola visualización.
+
+---
+
+# 2. Visualización de datos empresariales con ggplot2
+
+Usaremos el siguiente conjunto de datos que representa el rendimiento de ventas de una empresa.
+
+## Crear dataset
+
+```{r}
+sales <- data.frame(
+  month = rep(month.abb[1:12],4),
+  region = rep(c("North","South","East","West"),each=12),
+  sales = c(
+    120,130,125,140,150,160,170,165,155,145,135,125,
+    100,110,105,120,130,135,140,138,132,125,118,110,
+    90,95,100,110,115,120,125,123,118,112,105,98,
+    80,85,88,95,100,105,110,108,102,97,90,85
+  ),
+  marketing_spend = c(
+    20,22,21,23,25,26,28,27,26,24,23,22,
+    18,19,18,20,22,23,24,23,22,21,20,19,
+    15,16,17,18,19,20,21,20,19,18,17,16,
+    12,13,14,15,16,17,18,17,16,15,14,13
+  ),
+  employees = rep(c(50,45,40,35),each=12)
+)
+```
+
+---
+
+## 2.1 Visualización básica
+
+```{r}
+ggplot(sales, aes(marketing_spend, sales, color=region)) +
+  geom_point(size=3) +
+  geom_smooth(method="lm", se=FALSE) +
+  theme_minimal() +
+  labs(
+    title="Ventas en función de la inversión en marketing",
+    x="Inversión en marketing",
+    y="Ventas"
+  ) +
+  theme(
+    plot.title = element_text(hjust=0.5),
+    legend.position="bottom"
+  )
+```
+
+**Interpretación**
+
+El gráfico muestra una relación positiva entre la inversión en marketing y las ventas.  
+Las regiones con mayor inversión tienden a obtener mayores ingresos.Esto sugiere que un mayor gasto en marketing puede contribuir al aumento de las ventas en la empresa.
+
+---
+
+## 2.2 Etiquetas y temas
+
+```{r}
+ggplot(sales, aes(marketing_spend, sales, color = region)) +
+  geom_point(size = 4) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(hjust = 0.5),
+    axis.text = element_text(size = 12),
+    legend.position = "bottom"
+  ) +
+  labs(
+    title = "Relación entre inversión en marketing y ventas por región",
+    x = "Gasto en marketing",
+    y = "Ventas",
+    color = "Región"
+  )
+```
+
+**Interpretación**
+
+Este gráfico permite observar cómo cambian las ventas a lo largo del año en cada región.
+
+---
+
+## 2.3 Visualización temporal
+
+```{r}
+ggplot(sales, aes(month, sales, color = region, group = region)) +
+  geom_line(linewidth = 1.2) +
+  geom_point(size = 3) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  labs(
+    title = "Evolución mensual de las ventas por región",
+    x = "Mes",
+    y = "Ventas",
+    color = "Región"
+  )
+```
+
+**Interpretación**
+
+Este gráfico permite analizar cómo cambian las ventas a lo largo del tiempo en cada región. Se observa que algunas regiones mantienen niveles de ventas más altos que otras, lo que podría indicar diferencias en el desempeño comercial.
+
+---
+
+## 2.4 Gráficos de distribución
+
+```{r}
+ggplot(sales, aes(region, sales, fill = region)) +
+  geom_boxplot() +
+  theme_minimal() +
+  labs(
+    title = "Distribución de las ventas según la región",
+    x = "Región",
+    y = "Ventas",
+    fill = "Región"
+  )
+```
+
+**Interpretación**
+
+El diagrama de cajas permite comparar la variabilidad de las ventas entre regiones. Las diferencias en la dispersión y en los valores centrales pueden reflejar distintos comportamientos de mercado.
+
+---
+
+## 2.5 Facetas
+
+
+```{r}
+ggplot(sales, aes(marketing_spend, sales,
+                  color = region)) +
+  geom_point(aes(size = employees), alpha = 0.8) +
+  geom_smooth(method = "lm", se = FALSE, linewidth = 1) +
+  facet_wrap(~region) +
+  theme_minimal() +
+  labs(
+    title = "Relación entre inversión en marketing y ventas por región",
+    x = "Gasto en marketing",
+    y = "Ventas",
+    color = "Región",
+    size = "Número de empleados"
+  )
+```
+
+**Interpretación**
+
+La gráfica muestra la relación entre la inversión en marketing y las ventas en cada región de la empresa. El color de los puntos identifica la región y el tamaño representa el número de empleados. La línea de regresión permite observar la tendencia entre ambas variables. En general, se observa que a medida que aumenta la inversión en marketing, las ventas también tienden a aumentar. El uso de facetas separa los datos por región, lo que facilita comparar cómo se comporta esta relación en cada zona de manera independiente.
+
+---
+
+# 3. Ejercicios con Dataset de Kaggle (Customer Churn)
+
+## Crear dataset
+
+```{r}
+customers <- data.frame(
+  tenure=c(1,5,10,12,24,36,48,60,72,3,6,9,15,18,30,42,54,66,70,8),
+  monthly_charges=c(70,75,80,85,90,95,100,105,110,65,72,78,82,88,92,98,102,108,112,76),
+  total_charges=c(70,375,800,1020,2160,3420,4800,6300,7920,195,432,702,1230,1584,2760,4116,5508,7128,7840,608),
+  churn=rep(c("Yes","No"),10),
+  contract = rep(c("Month-to-month","One year","Two year","Month-to-month"),5),
+  internet_service = rep(c("DSL","Fiber","DSL","Fiber"),5)
+)
+```
+
+---
+
+## 3.1 Gráfico de dispersión: antigüedad vs cargos mensuales
+
+```{r}
+ggplot(customers, aes(tenure, monthly_charges, color = churn)) +
+  geom_point(alpha = 0.7) +
+  geom_smooth(method = "lm", se = FALSE, linewidth = 1) +
+  theme_minimal() +
+  labs(
+    title = "Relación entre la antigüedad del cliente y los cargos mensuales",
+    x = "Antigüedad del cliente",
+    y = "Cargos mensuales",
+    color = "Cancelación"
+  ) 
+```
+
+**Interpretación**
+
+El gráfico muestra la relación entre la antigüedad de los clientes y los cargos mensuales que pagan. Los puntos están coloreados según si el cliente canceló o no el servicio. La línea de regresión permite observar la tendencia general entre ambas variables.
+
+---
+
+## 3.2 Boxplot: cargos mensuales por cancelación
+
+```{r}
+ggplot(customers, aes(churn, monthly_charges, fill = churn)) +
+  geom_boxplot() +
+  theme_minimal() +
+  labs(
+    title = "Distribución de cargos mensuales según cancelación del servicio",
+    x = "Cancelación del servicio",
+    y = "Cargos mensuales"
+  ) 
+```
+
+**Interpretación**
+
+El diagrama de cajas permite comparar la distribución de los cargos mensuales entre los clientes que cancelaron el servicio y los que permanecen activos.
+
+---
+
+## 3.3 Histograma de antigüedad del cliente
+
+```{r}
+ggplot(customers, aes(tenure)) +
+  geom_histogram(bins = 20, fill = "steelblue", color = "black") +
+  theme_minimal() +
+  labs(
+    title = "Distribución de la antigüedad de los clientes",
+    x = "Antigüedad del cliente",
+    y = "Frecuencia"
+  ) 
+```
+
+**Interpretación**
+
+El histograma muestra cómo se distribuye la antigüedad de los clientes dentro del conjunto de datos, permitiendo identificar los rangos más comunes.
+
+---
+
+## 3.4 Violin plot: cargos mensuales por tipo de contrato
+
+```{r}
+ggplot(customers, aes(contract, monthly_charges, fill = contract)) +
+  geom_violin() +
+  theme_minimal() +
+  labs(
+    title = "Distribución de cargos mensuales según tipo de contrato",
+    x = "Tipo de contrato",
+    y = "Cargos mensuales"
+  ) 
+```
+
+**Interpretación**
+
+El gráfico de violín permite visualizar la forma de la distribución de los cargos mensuales para cada tipo de contrato, mostrando la densidad de los datos.
+
+---
+
+## 3.5 Gráfico de densidad de cargos mensuales
+
+```{r}
+ggplot(customers, aes(monthly_charges, fill = churn, color = churn)) +
+  geom_density(alpha = 0.3) +
+  theme_minimal() +
+  labs(
+    title = "Densidad de los cargos mensuales según cancelación del servicio",
+    x = "Cargos mensuales",
+    y = "Densidad"
+  ) 
+```
+
+**Interpretación**
+
+Este gráfico muestra la distribución suavizada de los cargos mensuales para los clientes que cancelaron el servicio y los que permanecen activos.
+
+---
+
+## 3.6 Gráfico de barras: número de clientes por contrato
+
+```{r}
+ggplot(customers, aes(contract)) +
+  geom_bar(fill = "darkblue") +
+  theme_minimal() +
+  labs(
+    title = "Número de clientes según tipo de contrato",
+    x = "Tipo de contrato",
+    y = "Cantidad de clientes"
+  ) 
+```
+
+**Interpretación**
+
+El gráfico de barras permite observar cuántos clientes tienen cada tipo de contrato dentro del conjunto de datos.
+
+---
+
+## 3.7 Gráfico de barras con cancelación
+
+```{r}
+ggplot(customers, aes(contract, fill = churn)) +
+  geom_bar() +
+  theme_minimal() +
+  labs(
+    title = "Clientes por contrato y estado de cancelación",
+    x = "Tipo de contrato",
+    y = "Cantidad de clientes",
+    fill = "Cancelación"
+  ) 
+```
+
+**Interpretación**
+
+Este gráfico permite comparar el número de clientes en cada tipo de contrato y observar cuántos de ellos cancelaron el servicio.
+
+---
+
+## 4. Ejercicio: Laboratorio ggplot2 (Dataset Telco Customer Churn)
+
+```{r}
+library(readr)
+library(tidyverse)
+
+churn <- read_csv(file.choose())
+
+churn$Churn <- as.factor(churn$Churn)
+churn$Contract <- as.factor(churn$Contract)
+churn$InternetService <- as.factor(churn$InternetService)
+```
+
+---
+
+## 4.1 Distribución de la permanencia del cliente
+
+```{r}
+ggplot(churn, aes(tenure)) +
+  geom_histogram(bins = 30)
+```
+
+**Interpretación**
+
+El histograma muestra cómo se distribuye la cantidad de meses que los clientes han permanecido con la compañía. Se observa que hay una mayor concentración de clientes con pocos meses de permanencia, mientras que el número de clientes disminuye a medida que aumenta el tiempo con la empresa. Esto puede indicar que muchos clientes abandonan el servicio en los primeros meses
+
+---
+
+## 4.2 Distribución de los cargos mensuales
+
+```{r}
+ggplot(churn, aes(MonthlyCharges)) +
+  geom_histogram(bins = 30)
+```
+
+**Interpretación**
+
+La gráfica muestra la distribución de los cargos mensuales que pagan los clientes. Se puede observar que los valores se concentran en ciertos rangos de precio, lo que indica que la mayoría de los clientes pagan tarifas similares. También se puede identificar si existen clientes que pagan tarifas muy bajas o muy altas en comparación con el promedio.
+
+---
+
+## 4.3 Distribución de los cargos totales
+
+```{r}
+ggplot(churn, aes(TotalCharges)) +
+  geom_histogram(bins = 30)
+```
+
+
+**Interpretación**
+
+Este histograma muestra la distribución del total acumulado que han pagado los clientes. Generalmente, los valores más bajos corresponden a clientes nuevos, mientras que los valores más altos corresponden a clientes que llevan más tiempo utilizando el servicio.
+
+---
+
+## 4.4 Proporción de clientes que cancelan el servicio
+
+```{r}
+ggplot(churn, aes(Churn)) +
+  geom_bar()
+```
+
+**Interpretación**
+
+El gráfico de barras muestra la cantidad de clientes que permanecen en la empresa frente a los que cancelan el servicio. Normalmente se observa que la mayoría de los clientes permanecen, mientras que una menor proporción abandona el servicio.
+
+---
+
+## 4.5 Boxplot: cargos mensuales vs cancelación del servicio
+
+```{r}
+ggplot(churn, aes(Churn, MonthlyCharges)) +
+  geom_boxplot()
+```
+
+**Interpretación**
+
+Este diagrama de caja compara los cargos mensuales entre los clientes que cancelaron el servicio y los que no. Si los clientes que abandonan el servicio tienen cargos mensuales más altos, esto podría indicar que los precios elevados influyen en la decisión de cancelar el servicio.
+
+---
+
+## 4.6 Gráfico de densidad: cargos mensuales según churn
+
+```{r}
+ggplot(churn, aes(MonthlyCharges, fill = Churn)) +
+  geom_density(alpha = 0.4)
+```
+
+**Interpretación**
+
+Este gráfico muestra la distribución de los cargos mensuales diferenciando entre clientes que cancelaron y los que no. Permite observar si los clientes que abandonan el servicio tienden a pagar más o menos que los clientes que permanecen.
+
+---
+
+## 4.7 Cancelación del servicio según tipo de contrato
+
+```{r}
+ggplot(churn, aes(Contract, fill = Churn)) +
+  geom_bar(position = "fill")
+```
+
+**Interpretación**
+
+El gráfico muestra la proporción de cancelaciones para cada tipo de contrato (mensual, anual, etc.). Normalmente se observa que los clientes con contratos mensuales tienen mayor probabilidad de cancelar el servicio, mientras que los contratos a largo plazo tienden a retener más clientes.
+
+---
+
+## 4.8 Cancelación del servicio según tipo de internet
+
+```{r}
+ggplot(churn, aes(InternetService, fill = Churn)) +
+  geom_bar(position = "fill")
+```
+
+**Interpretación**
+
+Esta gráfica permite observar cómo varía la proporción de cancelaciones según el tipo de servicio de internet (DSL, fibra óptica o ninguno). Esto ayuda a identificar si ciertos servicios están asociados con mayores tasas de abandono.
+
+---
+
+## 4.9 Cargos mensuales vs tiempo de permanencia
+
+```{r}
+ggplot(churn, aes(tenure, MonthlyCharges)) +
+  geom_point(alpha = 0.4)
+```
+
+**Interpretación**
+
+El gráfico de dispersión muestra la relación entre los cargos mensuales y el tiempo que los clientes permanecen con la empresa. Permite observar si existe alguna tendencia entre pagar más y permanecer más tiempo en el servicio.
+
+---
+
+## 4.10 Cargos mensuales vs permanencia
+
+```{r}
+ggplot(churn, aes(tenure, MonthlyCharges, color = Churn)) +
+  geom_point(alpha = 0.4)
+```
+
+**Interpretación**
+
+Este gráfico añade la variable de cancelación al gráfico anterior. Permite identificar visualmente si los clientes que abandonan el servicio se concentran en ciertos rangos de permanencia o cargos mensuales.
+
+---
+
+## 4.11 Línea de regresión
+
+```{r}
+ggplot(churn, aes(tenure, MonthlyCharges, color = Churn)) +
+  geom_point(alpha = 0.4) +
+  geom_smooth(method = "lm")
+```
+
+**Interpretación**
+
+La línea de regresión muestra la tendencia promedio entre la permanencia del cliente y los cargos mensuales. Esto permite identificar si existe una relación lineal entre ambas variables y si dicha relación cambia dependiendo de si el cliente cancela el servicio o no.
+
+---
+
+## 4.12 Facetas por tipo de contrato
+
+```{r}
+ggplot(churn, aes(tenure, MonthlyCharges)) +
+  geom_point(alpha = 0.4) +
+  facet_wrap(~Contract)
+```
+
+**Interpretación**
+
+Este gráfico divide la relación entre permanencia y cargos mensuales según el tipo de contrato. Permite comparar cómo se comportan los clientes en cada tipo de contrato y si existe alguna diferencia notable en la distribución de los datos.
+
+---
+
+## 4.13 Facetas por tipo de servicio de internet
+
+```{r}
+ggplot(churn, aes(tenure, MonthlyCharges)) +
+  geom_point(alpha = 0.4) +
+  facet_wrap(~InternetService)
+```
+
+**Interpretación**
+
+La gráfica separa los datos según el tipo de servicio de internet. Esto permite observar si los clientes con diferentes servicios tienen patrones distintos en cuanto a permanencia y cargos mensuales.
+
+---
+
+## 4.14 Gráfico de burbujas
+
+```{r}
+ggplot(churn, aes(tenure, TotalCharges, size = MonthlyCharges, color = Churn)) +
+  geom_point(alpha = 0.6)
+```
+
+**Interpretación**
+
+En este gráfico cada punto representa un cliente. El tamaño de la burbuja indica el valor de los cargos mensuales, mientras que el color muestra si el cliente canceló el servicio. Esto permite analizar simultáneamente la relación entre permanencia, cargos totales y cancelación.
+
+---
+
+## 4.15 Gráfico estilo publicación
+
+```{r}
+ggplot(churn, aes(tenure, MonthlyCharges, color = Churn)) +
+  geom_point(alpha = 0.4) +
+  geom_smooth(se = FALSE) +
+  theme_minimal() +
+  labs(
+    title = "Customer Churn Analysis",
+    x = "Customer Tenure",
+    y = "Monthly Charges"
+  )
+```
+
+**Interpretación**
+
+Este gráfico resume la relación entre la permanencia del cliente y los cargos mensuales, diferenciando por cancelación del servicio. La línea de tendencia ayuda a identificar patrones generales y facilita la interpretación visual de los datos.
+
+---
+
+# Conclusión
+
+En este trabajo se aplicaron diferentes técnicas de visualización de datos utilizando ggplot2 en R para analizar distintos conjuntos de información. A través de gráficos como diagramas de dispersión, histogramas, boxplots y gráficos de barras, fue posible identificar patrones, observar la relación entre variables y comparar grupos de datos de forma clara.
+
+Por ejemplo, en los gráficos de dispersión se observó la relación entre variables como la antigüedad del cliente y los cargos mensuales, mientras que los histogramas permitieron ver la distribución de los datos. Los boxplots ayudaron a comparar los cargos mensuales entre clientes que cancelaron y los que no, y los gráficos de barras mostraron la cantidad de clientes según el tipo de contrato.
+
+El uso de elementos visuales como colores, tamaños y facetas permitió representar múltiples variables en un mismo gráfico, facilitando la interpretación de los resultados. En conclusión, ggplot2 es una herramienta muy útil para el análisis exploratorio de datos, ya que permite transformar la información en representaciones visuales claras que ayudan a comprender mejor los datos.
