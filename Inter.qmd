@@ -1,0 +1,285 @@
+---
+title: "Ejercicio Inter e Intravarianza"
+author: "Nicol Romero"
+date: "2026-03-30"
+output: html_document
+format: 
+ html:
+  theme: 
+   light: flatly
+   dark: darkly
+  toc: true
+  toc_float: true
+  number-sections: true
+  code-fold: show
+  code-tools: true
+  code-copy: hover
+  code-overflow: wrap
+  embed-resources: true
+reference-location: margin
+lang: es
+editor: visual
+---
+
+## Introducción
+
+En estadística descriptiva, la media y la varianza son medidas fundamentales para analizar conjuntos de datos. La media permite conocer el valor promedio de un grupo de observaciones, mientras que la varianza mide qué tan dispersos o alejados se encuentran los datos respecto a ese promedio.
+
+En este ejercicio se utilizan datos divididos en tres grupos: mañana, tarde y noche. El objetivo es calcular la media y la varianza de algunos de estos grupos utilizando el software estadístico R, y posteriormente interpretar los resultados obtenidos.
+
+## Datos suministrados
+
+Primero se definen los datos entregados por el profesor. Estos representan tres grupos de observaciones: *mañana, tarde y noche.*
+
+```{r}
+mañana <- c(4.0, 3.5, 3.8, 3.6, 4.1)
+tarde  <- c(3.8, 3.5, 3.0, 2.9)
+noche  <- c(3.1, 2.5, 2.6)
+
+```
+
+## Media y varianza del grupo mañana
+
+**Enunciado**
+
+Calcular la media y la varianza del número de datos correspondientes al grupo mañana utilizando R.
+
+$$ 
+\large n=5
+$$
+
+$$ 
+\large x_{1} = \frac{4.0 + 3.5 + 3.8 + 3.6 + 4.1}{5} = 3.8
+$$
+
+$$
+\large s_2^{1}= \frac{(4.0 - 3.8)^2 +(3.5 - 3.8)^2 +(3.8 - 3.8)^2 +(3.6 - 3.8)^2 +(4.1 - 3.8)^2}{5}
+= 0.046
+$$
+
+**Interpretación**
+
+La media del grupo mañana es aproximadamente 3.8, lo que indica que el valor promedio de este conjunto de datos se encuentra alrededor de ese número.
+
+La varianza es baja, lo que significa que los datos presentan poca dispersión y están relativamente cercanos al valor promedio.
+
+## Media y varianza del grupo tarde
+
+**Enunciado**
+
+Calcular la media y la varianza del número de datos correspondientes al grupo tarde utilizando R.
+
+$$ 
+\large n=4
+$$
+
+$$
+\large x_{2} = \frac{3.8 + 3.5 + 3.0 + 2.9}{4} = 3.3
+$$
+
+$$
+s_2^{2}
+= \frac{
+(3.8 - 3.3)^2 +
+(3.5 - 3.3)^2 +
+(3.0 - 3.3)^2 +
+(2.9 - 3.3)^2
+}{4}
+= 0.135
+$$
+
+**Interpretación**
+
+La media del grupo tarde es aproximadamente 3.3, lo que indica que el promedio de los valores en este grupo es menor que el del grupo mañana.
+
+La varianza es mayor que la del grupo mañana, lo que sugiere que los datos del grupo tarde presentan mayor dispersión respecto a su media.
+
+## Media y varianza del grupo noche
+
+**Enunciado**
+
+Calcular la media y la varianza del número de datos correspondientes al grupo noche utilizando el software estadístico R.
+
+$$
+\large n=3
+$$
+
+$$
+\large x_{3}=\frac{3.1 + 2.5 + 2.6}{3} = 2.7333
+$$
+
+$$
+\large s_3^{2}
+= \frac{
+(3.1 - 2.7333)^2 +
+(2.5 - 2.7333)^2 +
+(2.6 - 2.7333)^2
+}{3}
+= 0.0689
+$$
+
+**Interpretación**
+
+La media del grupo noche es aproximadamente 2.73, lo que indica que el valor promedio de este grupo es menor que el de los grupos mañana y tarde.
+
+La varianza es relativamente pequeña, lo que indica que los valores del grupo noche no presentan una gran dispersión y se mantienen relativamente cercanos a su promedio.
+
+## Media Total
+
+**Enunciado**
+
+Calcular la media total considerando todos los datos de los tres grupos: mañana, tarde y noche.
+
+$$
+\large x_{T} = \frac{5(3.8) + 4(3.3) + 3(2.7333)}{12} = 3.3667
+$$
+
+**Interpretación**
+
+La media total es aproximadamente 3.36, lo que representa el promedio general de todos los datos considerando los tres grupos.
+
+Este valor resume el comportamiento promedio del conjunto completo de observaciones.
+
+## Codigo en R
+
+**Enunciado**
+
+Presentar el código completo en R utilizado para realizar los cálculos de media y varianza de los diferentes grupos de datos.
+
+```{r}
+medias <- c(mean(mañana), mean(tarde), mean(noche))
+cat("Las medias son:\n",medias)
+
+n <- c(length(mañana), length(tarde), length(noche))
+cat("Numero de cantidades de cada grupo son:\n",n)
+
+var_p <- function(x) mean((x - mean(x))^2)
+
+varianzas <- c(
+  Mañana = var_p(mañana),
+  Tarde  = var_p(tarde),
+  Noche  = var_p(noche)
+)
+
+cat("Las varianzas son:\n",varianzas)
+
+## Media total
+media_total <- sum(medias * n) / sum(n)
+cat("Media total es:\n",media_total)
+
+
+```
+
+**Interpretación**
+
+Los resultados obtenidos muestran las medias de cada grupo, el número de observaciones en cada uno y sus varianzas correspondientes. Además, se calcula la media total, que representa el promedio general considerando todos los datos de los tres grupos.
+
+Este procedimiento permite analizar de forma más completa el comportamiento de los datos y comparar las diferencias entre los distintos grupos.
+
+## Varianza de las medias
+
+**Enunciado**
+
+Calcular la varianza de las medias correspondientes a los grupos mañana, tarde y noche, utilizando R.
+
+```{r}
+var_medias <- var_p(medias)
+cat("La varianza de las medias es:\n", var_medias)
+
+```
+
+**Interpretación**
+
+La varianza de las medias indica cuánto difieren entre sí los promedios de los grupos mañana, tarde y noche.
+
+Si la varianza es pequeña, significa que las medias de los grupos son similares entre sí. En cambio, si la varianza es mayor, indica que existen diferencias más notables entre los promedios de los grupos.
+
+## Media de las varianzas
+
+$$
+\large M_{V}
+= \frac{s_1^2 + s_2^2 + s_3^2}{3}
+= \frac{0.052 + 0.135 + 0.0689}{3}
+= 0.0852963
+$$
+
+```{r}
+media_varianzas <- mean(varianzas)
+cat("La media de las varianzas es:\n", media_varianzas)
+```
+
+**Interpretación**
+
+La media de las varianzas representa una medida promedio de la variabilidad de los datos en los tres grupos analizados.
+
+Si este valor es bajo, significa que en general los datos de los grupos no presentan mucha dispersión respecto a sus medias. En cambio, si el valor fuera alto, indicaría que los datos presentan mayor variabilidad dentro de los grupos.
+
+## Conclusion
+
+En este trabajo se calcularon la media y la varianza de los grupos mañana, tarde y noche utilizando el software R. Estas medidas permitieron analizar el valor promedio de los datos y la dispersión que presentan dentro de cada grupo, facilitando la comparación entre los distintos conjuntos de datos.
+
+Además, se calcularon la media total, la varianza de las medias y la media de las varianzas, lo cual permitió obtener una visión más general del comportamiento de todos los datos. Estos resultados muestran cómo las herramientas estadísticas y el uso de R ayudan a organizar, analizar e interpretar información de manera clara y eficiente.
+
+## Ejercicio: Covarianza y correlación entre dos variables
+
+Enunciado
+
+Considere dos conjuntos de datos numéricos que representan dos variables X y Y.
+
+El objetivo es calcular la covarianza y el coeficiente de correlación de Pearson utilizando R, con el fin de analizar el tipo de relación existente entre ambas variables.
+
+```{r}
+a <- c(2, 5,7 ,4 ,10)
+b <- c(21, 18, 11, 5, 3)
+
+```
+
+**Explicación**
+
+Se crean dos vectores llamados a y b, que contienen los valores de las variables que se desean analizar. Estos datos permitirán estudiar si existe alguna relación entre ambos conjuntos.
+
+#### Cálculo de covarianza y correlación en R
+
+```{r}
+
+cov(a, b)
+cor(a, b)
+
+```
+
+**Interpretación**
+
+El resultado muestra una covarianza negativa, lo cual indica que existe una relación inversa entre las variables. Esto significa que cuando los valores de una variable aumentan, los de la otra tienden a disminuir.
+
+Por otro lado, el coeficiente de correlación es aproximadamente −0.686, lo que sugiere una relación lineal negativa de intensidad moderada entre las variables analizadas.
+
+##### Representación gráfica
+
+```{r}
+
+library(ggplot2)
+datos <- data.frame(a, b)
+
+ggplot(datos, aes(x = a, y = b)) +
+  geom_point(color = "purple", size = 3) +
+  geom_smooth(method = "lm", se = FALSE, color = "pink") +
+  labs( 
+    title = paste("Relación entre las variables (cor =", round(cor(a, b), 3), ")"),
+    x = "Variable A",
+    y = "Variable B"
+   ) +
+  theme_minimal()
+
+```
+
+**Interpretación**
+
+En la gráfica se observa un diagrama de dispersión donde cada punto representa la relación entre los valores de las variables A y B. La línea de regresión muestra una tendencia descendente, lo que indica que a medida que los valores de la variable A aumentan, los valores de la variable B tienden a disminuir.
+
+Además, la distribución de los puntos alrededor de la línea sugiere que existe una relación lineal negativa moderada entre ambas variables, lo cual coincide con el valor obtenido del coeficiente de correlación de Pearson.
+
+###### Conclusion
+
+A partir del cálculo de la covarianza y el coeficiente de correlación, se pudo identificar que las variables analizadas presentan una relación inversa. Esto significa que cuando una variable incrementa su valor, la otra tiende a reducirse.
+
+El análisis gráfico mediante el diagrama de dispersión y la línea de regresión permitió visualizar de manera clara esta tendencia. De esta forma, el uso de herramientas estadísticas en R facilita la comprensión de la relación entre variables y ayuda a interpretar los datos de forma más clara.
