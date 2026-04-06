@@ -1,0 +1,391 @@
+---
+title: Práctica de dplyr con el conjunto de datos Gapminder
+author: Nicol Romero
+date: "2026-03-30"
+output: html_document
+format: 
+  html:
+    theme: 
+      light: flatly
+      dark: darkly
+    toc: true
+    toc_float: true
+    number-sections: true
+    code-fold: show
+    code-tools: true
+    code-copy: hover
+    code-overflow: wrap
+    embed-resources: true
+reference-location: margin
+lang : es
+---
+
+# Práctica de dplyr con el conjunto de datos Gapminder
+
+## INTRODUCCION
+
+El análisis de datos es una etapa fundamental dentro de la estadística y la ciencia de datos. En el lenguaje de programación `R`, el paquete `dplyr` permite manipular y transformar datos de manera eficiente y legible mediante el uso de funciones especializadas.
+
+En esta práctica se utilizará el conjunto de datos `Gapminder`, el cual contiene información histórica sobre distintos países del mundo, incluyendo variables como la esperanza de vida, población, PIB per cápita, continente y año.
+
+El objetivo es aplicar los principales verbos de `dplyr` para seleccionar, filtrar, ordenar, agrupar y resumir datos, permitiendo obtener información relevante y comprender patrones globales de desarrollo y bienestar.
+
+## Cargar librerías
+
+```{r message=FALSE}
+library(dplyr)
+library(gapminder)
+library(tidyr)
+```
+
+# SELECCIONAR COLUMNAS COUNTRY, YEAR Y LIFEEXP
+
+**Enunciado**
+
+Seleccione únicamente las columnas **country**, **year** y **lifeExp**.
+
+```{r}
+gapminder %>% 
+  select(country, year, lifeExp)
+```
+
+**Interpretación**
+
+Este comando selecciona únicamente las variables *país, año y esperanza de vida* del conjunto de datos original. Esto permite trabajar con un subconjunto más pequeño y enfocado de la información, facilitando el análisis cuando solo interesan variables específicas.
+
+
+# Filtrar el conjunto de datos para mostrar solo las observaciones del año 2007
+
+**Enunciado**
+
+Filtre el conjunto de datos para mostrar solo las observaciones del año 2007.
+
+```{r}
+gapminder %>% 
+  filter(year == 2007)
+
+```
+
+**Interpretación**
+
+Aquí se seleccionan únicamente los datos correspondientes al año 2007, el último año disponible en el conjunto de datos Gapminder. Esto permite observar la situación más reciente registrada para todos los países en términos de población, esperanza de vida y PIB per cápita.
+
+# Filtrar el conjunto de datos para los países de Asia
+
+**Enunciado**
+
+Filtre el conjunto de datos para mostrar únicamente los países que pertenecen al continente asiático (Asia).
+
+```{r}
+gapminder%>%
+ filter(continent == "Asia")
+
+```
+
+**Interpretación**
+
+Este filtro permite analizar únicamente los países que pertenecen al continente asiático. De esta forma se puede estudiar el comportamiento de variables como la esperanza de vida o el PIB dentro de una región específica del mundo.
+
+# Seleccionar las filas donde la esperanza de vida sea mayor que 70
+
+**Enunciado**
+
+Seleccione las observaciones donde la esperanza de vida (lifeExp) sea mayor a 70 años.
+
+```{r}
+gapminder %>% 
+  filter(lifeExp > 70)
+```
+
+**Interpretación**
+
+Se seleccionan los países y años donde la esperanza de vida supera los 70 años, lo que generalmente indica mejores condiciones de salud, desarrollo económico y calidad de vida en esas sociedades.
+
+# Ordenar el conjunto de datos por esperanza de vida en orden ascendente
+
+**Enunciado**
+
+Ordene el conjunto de datos de acuerdo con la esperanza de vida (lifeExp) en orden ascendente, desde el valor más bajo hasta el más alto.
+
+```{r}
+gapminder %>% 
+  arrange(lifeExp)
+```
+
+**Interpretación**
+
+Los datos se ordenan desde la menor hasta la mayor esperanza de vida. Esto permite identificar rápidamente los países o periodos con menores niveles de longevidad.
+
+# Ordenar el conjunto de datos por PIB per cápita en orden descendente
+
+**Enunciado**
+
+Ordene el conjunto de datos de acuerdo con el PIB per cápita (gdpPercap) en orden descendente, desde el valor más alto hasta el más bajo.
+
+```{r}
+gapminder %>% 
+  arrange(desc(gdpPercap))
+```
+
+**Interpretación**
+
+En este caso los países se organizan desde el mayor hasta el menor PIB per cápita, lo cual facilita identificar las economías más ricas dentro del conjunto de datos.
+
+# Crear una nueva columna `gdp_total`
+
+**Enunciado**
+
+Cree una nueva columna llamada gdp_total que represente el PIB total aproximado del país, calculado como el producto entre gdpPercap y pop.
+
+```{r}
+gapminder %>% 
+  mutate(gdp_total = gdpPercap * pop)
+
+```
+
+**Interpretación**
+
+Se crea una nueva variable llamada `gdp_total`, que representa una aproximación al `PIB total del país`, multiplicando el PIB per cápita por la población total.
+
+# Filtrar los países con población mayor a 100 millones en 2007
+
+**Enunciado**
+
+Filtre el conjunto de datos para identificar los países que tenían una población mayor a 100 millones de habitantes en el año 2007.
+
+```{r}
+gapminder %>% 
+  filter(year == 2007, pop > 100000000)
+
+```
+
+**Interpretación**
+
+Se identifican los países que en el *año 2007 tenían más de 100 millones de habitantes*, lo que permite observar las grandes potencias demográficas del mundo.
+
+# Seleccionar los países de Europa mostrando solo country y gdpPercap
+
+**Enunciado**
+
+Seleccione únicamente los países del continente europeo (Europe) y muestre solo las columnas country y gdpPercap.
+
+```{r}
+gapminder %>% 
+  filter(continent == "Europe") %>% 
+  select(country, gdpPercap)
+```
+
+**Interpretación**
+
+Se analizan los países europeos mostrando únicamente el *nombre del país y su PIB per cápita*, lo cual permite comparar el nivel económico entre las naciones del continente.
+
+# Calcular el promedio de la esperanza de vida para cada continente
+
+**Enunciado**
+
+Calcule el promedio de la esperanza de vida (lifeExp) para cada continente.
+
+```{r}
+gapminder %>% 
+  group_by(continent) %>% 
+  summarise(avg_lifeExp = mean(lifeExp))
+```
+
+**Interpretación**
+
+Se calcula la *esperanza de vida promedio por continente*, lo que permite comparar las condiciones generales de salud y longevidad entre distintas regiones del mundo.
+
+# Promedio del PIB per cápita para cada continente y año
+
+**Enunciado**
+
+Calcule el promedio del PIB per cápita (gdpPercap) para cada continente y año.
+
+```{r}
+gapminder %>% 
+  group_by(continent, year) %>%
+  summarise(avg_gdpPercap = mean(gdpPercap))
+```
+
+**Interpretación**
+
+Este análisis permite observar *cómo evoluciona el PIB per cápita promedio en cada continente a lo largo del tiempo*, mostrando tendencias económicas globales.
+
+# Esperanza de vida máxima para cada continente
+
+**Enunciado**
+
+Encuentre el valor máximo de esperanza de vida (lifeExp) registrado en cada continente.
+
+```{r}
+gapminder %>% 
+  group_by(continent) %>% 
+  summarise(max_lifeExp = max(lifeExp))
+
+```
+
+**Interpretación**
+
+Se identifica el *valor máximo de esperanza de vida alcanzado en cada continente*, lo que indica los niveles más altos de bienestar y desarrollo alcanzados.
+
+# Contar cuántos países hay en cada continente
+
+**Enunciado**
+
+Cuente cuántos países distintos hay en cada continente dentro del conjunto de datos.
+
+```{r}
+gapminder %>% 
+  group_by(continent) %>% 
+  summarise(n_countries = n_distinct(country))
+```
+
+**Interpretación**
+
+Se cuenta el número de *países distintos en cada continente* dentro del conjunto de datos, lo que permite entender la distribución geográfica de la información.
+
+# Población total por continente
+
+**Enunciado**
+
+Calcule la población total para cada continente sumando la variable pop.
+
+```{r}
+gapminder %>% 
+  group_by(continent) %>% 
+  summarise(total_pop = sum(pop))
+
+```
+
+**Interpretación**
+
+Este cálculo permite conocer la *población total acumulada por continente*, mostrando qué regiones del mundo concentran mayor cantidad de habitantes.
+
+# Promedio de esperanza de vida por año en América
+
+**Enunciado**
+
+Filtre el conjunto de datos para el continente americano (Americas) y calcule el promedio de esperanza de vida por año.
+
+```{r}
+gapminder %>% 
+  filter(continent == "Americas") %>% 
+  group_by(year) %>% 
+  summarise(avg_lifeExp = mean(lifeExp))
+```
+
+**Interpretación**
+
+Este análisis muestra cómo ha cambiado la *esperanza de vida promedio en el continente americano a lo largo del tiempo*, permitiendo identificar mejoras en salud y desarrollo.
+
+# Los 10 países con mayor PIB per cápita en 2007
+
+**Enunciado**
+
+Cree un conjunto de datos que contenga los 10 países con mayor PIB per cápita en el año 2007.
+
+```{r}
+gapminder %>% 
+  filter(year == 2007) %>% 
+  arrange(desc(gdpPercap)) %>% 
+  slice_head(n = 10)
+```
+
+**Interpretación**
+
+Se identifican los *10 países con mayor riqueza económica por persona en 2007*, lo que permite observar cuáles eran las economías más desarrolladas en ese momento.
+
+# País con mayor esperanza de vida en cada año
+
+**Enunciado**
+
+Encuentre el país con la mayor esperanza de vida en cada año del conjunto de datos.
+
+```{r}
+gapminder %>% 
+  group_by(year) %>% 
+  slice_max(lifeExp, n = 1)
+```
+
+**Interpretación**
+
+Este procedimiento permite identificar *qué país tuvo la mayor esperanza de vida en cada año registrado*, mostrando ejemplos de países con altos niveles de salud y bienestar.
+
+# Mediana del PIB per cápita para cada continente
+
+**Enunciado**
+
+Calcule la mediana del PIB per cápita (gdpPercap) para cada continente.
+
+```{r}
+gapminder %>% 
+  group_by(continent) %>% 
+  summarise(median_gdpPercap = median(gdpPercap))
+```
+
+**Interpretación**
+
+La *mediana* permite obtener un valor representativo del PIB per cápita por continente, evitando que valores extremadamente altos o bajos distorsionen el resultado.
+
+# Cambio en la esperanza de vida entre 1952 y 2007
+
+**Enunciado**
+
+Para cada país, calcule el cambio en la esperanza de vida entre los años 1952 y 2007.
+
+```{r}
+library(tidyr)
+gapminder %>%
+  filter(year %in% c(1952, 2007)) %>%
+  select(country, year, lifeExp) %>%
+  pivot_wider(names_from = year, values_from = lifeExp) %>%
+  mutate(change_lifeExp = `2007` - `1952`)
+```
+
+**Interpretación**
+
+Este análisis calcula cuánto *aumentó la esperanza de vida en cada país entre 1952 y 2007*, mostrando el progreso en salud y calidad de vida a lo largo de más de medio siglo.
+
+# Los 5 países con mayor aumento en el PIB per cápita
+
+**Enunciado**
+
+Identifique los cinco países que presentaron el mayor aumento en el PIB per cápita entre 1952 y 2007
+
+```{r}
+library(tidyr)
+
+gapminder %>%
+  filter(year %in% c(1952, 2007)) %>%
+  select(country, year, gdpPercap) %>%
+  pivot_wider(names_from = year, values_from = gdpPercap) %>%
+  mutate(change_gdp = `2007` - `1952`) %>%
+  arrange(desc(change_gdp)) %>%
+  slice_head(n = 5)
+```
+
+**Interpretación**
+
+Se identifican los *cinco países que tuvieron el mayor crecimiento económico por persona entre 1952 y 2007*, lo que refleja procesos de desarrollo económico significativos.
+
+# Desafío Extra (Bonus)
+
+```{r}
+gapminder %>%
+  filter(year == 2007) %>%
+  group_by(continent) %>%
+  summarise(avg_lifeExp = mean(lifeExp)) %>%
+  arrange(desc(avg_lifeExp))
+```
+
+**Interpretación**
+
+Este pipeline calcula la *esperanza de vida promedio por continente en el año 2007* y luego ordena los resultados de mayor a menor, permitiendo identificar qué regiones del mundo presentan mayores niveles de longevidad.
+
+# Conclusión
+
+El uso del paquete `dplyr` facilita significativamente la manipulación y análisis de datos en `R`, permitiendo realizar operaciones complejas de manera clara.
+
+A través del análisis del conjunto de datos `Gapminder`, fue posible explorar diferentes aspectos relacionados con el desarrollo mundial, como la evolución de la esperanza de vida, las diferencias económicas entre países y continentes, y los cambios en indicadores importantes a lo largo del tiempo.
+
+Los resultados muestran tendencias claras de mejora en la esperanza de vida y crecimiento económico en muchos países entre 1952 y 2007, aunque también evidencian desigualdades entre regiones. Este tipo de análisis es fundamental para comprender procesos de desarrollo global y para apoyar la toma de decisiones basada en datos.
